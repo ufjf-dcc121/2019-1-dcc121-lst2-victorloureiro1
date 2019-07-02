@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Organização de Animais</title>
+        <style media="screen">
+            table {
+                font-family: sans-serif;
+                border-collapse: collapse;
+                border: 2px solid rgb(17, 14, 233);
+                letter-spacing: 1px;
+                font-size: 0.8rem;
+            }
+            td, th {
+                border: 1px solid rgb(17, 14, 233);
+                padding: 10px 20px;
+            }
+            th {
+                background-color: rgb(17, 14, 233);
+            }
+            td {
+                text-align: center;
+            }
+            tr:nth-child(even) td {
+                background-color: rgb(17, 14, 233);
+            }
+            tr:nth-child(odd) td {
+                background-color: rgb(26, 214, 26);
+            }
+            caption {
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Organização de Animais</h1>
+        <form id="form" action="">
+            <label>
+                Animal:
+                <input type="text" name="animal">
+            </label><br />
+            <label>
+                Altura:
+                <input type="number" name="height" step="0.01" min="0">
+            </label><br />
+            <label>
+                Peso:
+                <input type="number" name="weight" step="0.01" min="0">
+            </label><br />
+            <label>
+                Velocidade:
+                <input type="number" name="speed" step="0.01" min="0">
+            </label><br />
+            <label>
+                Idade máxima:
+                <input type="number" name="age" min="0">
+            </label><br />
+            <input type="submit" name="create">
+        </form>
+        <table>
+            <caption>Características dos animais</caption>
+            <thead>
+                <tr>
+                    <th>Animal</th>
+                    <th>Altura</th>
+                    <th>Peso</th>
+                    <th>Velocidade</th>
+                    <th>Idade máxima</th>
+                </tr>
+            </thead>
+            <tbody id="animals">
+            </tbody>
+            <tfoot>
+                <tr id="mean">
+                    <td>Média</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+            </tfoot>
+        </table>
+        <p>O animal mais alto é o(a) <span id="highest"></span>.</p>
+        <p>O animal mais pesado é o(a) <span id="heaviest"></span>.</p>
+        <p>O animal mais veloz é o(a) <span id="fastest"></span>.</p>
+        <p>O animal mais longevo é o(a) <span id="longest"></span>.</p>
+        <p><span id="heavy"></span> acima da média de peso</p>
+        <script type="text/javascript">
+            var animalsList = [];
+            var highestElem = document.getElementById("highest");
+            var highestName = "";
+            var highestValue = 0;
+            var heaviestElem = document.getElementById("heaviest");
+            var heaviestName = "";
+            var heaviestValue = 0;
+            var fastestElem = document.getElementById("fastest");
+            var fastestName = "";
+            var fastestValue = 0;
+            var longestElem = document.getElementById("longest");
+            var longestName = "";
+            var longestValue = 0;
+            var sumHeight = 0;
+            var sumWeight = 0;
+            var sumSpeed = 0;
+            var sumAge = 0;
+            var animalsElem = document.getElementById("animals");
+            var meanElem = document.getElementById("mean");
+            var heavyElem = document.getElementById("heavy");
+            var form = document.getElementById("form");
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                var newAnimal = {
+                    "animal": form.elements["animal"].value,
+                    "height": parseFloat(form.elements["height"].value),
+                    "weight": parseFloat(form.elements["weight"].value),
+                    "speed": parseFloat(form.elements["speed"].value),
+                    "age": parseInt(form.elements["age"].value),
+                }
+                if (!newAnimal.animal || !newAnimal.height || !newAnimal.weight || !newAnimal.speed || !newAnimal.age)
+                    return;
+                animalsList.push(newAnimal);
+                if (highestValue < newAnimal.height)
+                {
+                    highestName = newAnimal.animal;
+                    highestValue = newAnimal.height;
+                    highestElem.textContent = highestName;
+                }
+                if (heaviestValue < newAnimal.weight)
+                {
+                    heaviestName = newAnimal.animal;
+                    heaviestValue = newAnimal.weight;
+                    heaviestElem.textContent = heaviestName;
+                }
+                if (fastestValue < newAnimal.speed)
+                {
+                    fastestName = newAnimal.animal;
+                    fastestValue = newAnimal.speed;
+                    fastestElem.textContent = fastestName;
+                }
+                if (longestValue < newAnimal.age)
+                {
+                    longestName = newAnimal.animal;
+                    longestValue = newAnimal.age;
+                    longestElem.textContent = longestName;
+                }
+                sumHeight += newAnimal.height;
+                sumWeight += newAnimal.weight;
+                sumSpeed += newAnimal.speed;
+                sumAge += newAnimal.age;
+                var newAnimalTr = document.createElement("tr");
+                var newAnimalName = document.createElement("td");
+                newAnimalName.textContent = newAnimal.animal;
+                newAnimalTr.appendChild(newAnimalName);
+                var newAnimalHeight = document.createElement("td");
+                newAnimalHeight.textContent = newAnimal.height;
+                newAnimalTr.appendChild(newAnimalHeight);
+                var newAnimalWeight = document.createElement("td");
+                newAnimalWeight.textContent = newAnimal.weight;
+                newAnimalTr.appendChild(newAnimalWeight);
+                var newAnimalSpeed = document.createElement("td");
+                newAnimalSpeed.textContent = newAnimal.speed;
+                newAnimalTr.appendChild(newAnimalSpeed);
+                var newAnimalAge = document.createElement("td");
+                newAnimalAge.textContent = newAnimal.age;
+                newAnimalTr.appendChild(newAnimalAge);
+                animalsElem.appendChild(newAnimalTr);
+                meanElem.children[1].textContent = Math.round((sumHeight / animalsList.length) * 100) / 100;
+                meanElem.children[2].textContent = Math.round((sumWeight / animalsList.length) * 100) / 100;
+                meanElem.children[3].textContent = Math.round((sumSpeed / animalsList.length) * 100) / 100;
+                meanElem.children[4].textContent = Math.round((sumAge / animalsList.length) * 100) / 100;
+                meanWeight = sumWeight / animalsList.length;
+                quantHeavyAnimals = animalsList.reduce(function(acc, cur) {
+                    return (cur.weight <= meanWeight ? acc : acc + 1);
+                }, 0);
+                heavyElem.textContent = (quantHeavyAnimals == 1 ? "Existe " : "Existem ") +
+                                        quantHeavyAnimals +
+                                        (quantHeavyAnimals == 1 ? " animal" : " animais");
+            });
+        </script>
+    </body>
+</html>
